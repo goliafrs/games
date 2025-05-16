@@ -1,0 +1,22 @@
+services:
+  sons-of-the-forest:
+    image: jammsen/sons-of-the-forest-dedicated-server:latest
+    container_name: sons-of-the-forest
+    hostname: sons-of-the-forest
+    restart: unless-stopped
+    ports:
+      - 8766:8766/udp
+      - 27016:27016/udp
+      - 9700:9700/udp
+    volumes:
+      - ./data:/sonsoftheforest
+      - ./steamcmd:/steamcmd
+      - ./winedata:/winedata
+    environment:
+      ALWAYS_UPDATE_ON_START: 1
+    logging:
+      driver: json-file
+      options:
+        tag: "{{.Name}}"
+        max-size: 1m
+        max-file: 5

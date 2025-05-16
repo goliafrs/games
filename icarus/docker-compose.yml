@@ -1,0 +1,44 @@
+services:
+  icarus:
+    image: mornedhels/icarus-server:latest
+    container_name: icarus
+    hostname: icarus
+    restart: unless-stopped
+    stop_grace_period: 90s
+    ports:
+      - 17777:17777/udp
+      - 27015:27015/udp
+    volumes:
+      - ./data:/home/icarus/drive_c/icarus
+      - ./game:/opt/icarus
+    environment:
+      SERVER_NAME: ${SERVER_NAME}
+      SERVER_PASSWORD: ${SERVER_PASSWORD}
+      SERVER_ADMIN_PASSWORD: ${SERVER_ADMIN_PASSWORD}
+      SERVER_MAX_PLAYERS: 2
+      SERVER_PORT: 17777
+      SERVER_QUERYPORT: 27015
+      SERVER_IP: ${SERVER_IP}
+      SERVER_SHUTDOWN_IF_NOT_JOINED: 60
+      SERVER_SHUTDOWN_IF_EMPTY: 60
+      SERVER_ALLOW_NON_ADMINS_LAUNCH: true
+      SERVER_ALLOW_NON_ADMINS_DELETE: false
+      SERVER_RESUME_PROSPECT: true
+      GAME_BRANCH: public
+      ASYNC_TASK_TIMEOUT: 60
+      PUID: 4711
+      PGID: 4711
+      UPDATE_CRON: */30 * * * *
+      # CLEANUP_CRON: 0 0 * * *
+      CLEANUP_DAYS: 7
+      CLEANUP_DELETE_BACKUPS: false
+      CLEANUP_PRUNE_FOLDER: pruned
+      # CLEANUP_EXCLUDES:
+      STEAM_API_KEY: ${STEAM_API_KEY}
+      # STEAMCMD_ARGS:
+    logging:
+      driver: json-file
+      options:
+        tag: "{{.Name}}"
+        max-size: 1m
+        max-file: 5

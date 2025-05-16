@@ -1,0 +1,23 @@
+services:
+  foundry:
+    image: luxusburg/docker-foundry:latest
+    container_name: foundry
+    hostname: foundry
+    restart: unless-stopped
+    ports:
+      - 3724:3724/udp
+      - 27015:27015/udp
+    volumes:
+      - ./server:/home/foundry/server_files_:rw
+      - ./data:/home/foundry/persistent_data:rw
+    environment:
+      SERVER_PWD: ${SERVER_PWD}
+      SERVER_NAME: ${SERVER_NAME}
+      PAUSE_SERVER_WHEN_EMPTY: false
+      MAX_TRANSFER_RATE: 8192
+    logging:
+      driver: json-file
+      options:
+        tag: "{{.Name}}"
+        max-size: 1m
+        max-file: 5

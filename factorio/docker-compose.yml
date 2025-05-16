@@ -1,0 +1,28 @@
+services:
+  factorio:
+    image: factoriotools/factorio:stable
+    container_name: factorio
+    hostname: factorio
+    restart: unless-stopped
+    ports:
+      - 34197:34197/udp
+    volumes:
+      - ./data:/factorio
+    environment:
+      SAVE_NAME: ${SAVE_NAME}                                                   # Name to use for the save file
+      INSTANCE_NAME: ${INSTANCE_NAME}                                           # Name to use for the instance
+      INSTANCE_DESC: ${INSTANCE_DESC}                                           # Description to use for the instance
+      TOKEN: ${TOKEN}                                                           # factorio.com token
+      USERNAME: ${USERNAME}                                                     # factorio.com username
+      UPDATE_MODS_ON_START: true                                                # If mods should be updated before starting the server
+      GENERATE_NEW_SAVE: true                                                   # Generate a new save if one does not exist before starting the server
+      LOAD_LATEST_SAVE: true                                                    # Load latest when true. Otherwise load SAVE_NAME
+      PORT: 34197                                                               # UDP port the server listens on
+      BIND: 0.0.0.0                                                             # IP address (v4 or v6) the server listens on (IP[:PORT])
+      RCON_PORT: 27015                                                          # TCP port the rcon server listens on
+    logging:
+      driver: json-file
+      options:
+        tag: "{{.Name}}"
+        max-size: 1m
+        max-file: 5

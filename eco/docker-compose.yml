@@ -1,0 +1,19 @@
+services:
+  eco:
+    image: strangeloopgames/eco-game-server:latest
+    container_name: eco
+    hostname: eco
+    restart: unless-stopped
+    ports:
+      - 3000:3000/udp
+      - 3001:3001/tcp
+    volumes:
+      - ./Storage:/app/Storage:rw
+      - ./Configs:/app/Configs:rw
+      - ./Mods:/app/Mods:rw
+    logging:
+      driver: json-file
+      options:
+        tag: "{{.Name}}"
+        max-size: 1m
+        max-file: 5

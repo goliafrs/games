@@ -1,0 +1,22 @@
+services:
+  space-engineers:
+    image: devidian/spaceengineers:latest
+    container_name: space-engineers
+    hostname: space-engineers
+    restart: unless-stopped
+    ports:
+      - 27016:27016/udp
+    volumes:
+      - ./data/plugins:/appdata/space-engineers/plugins
+      - ./data/instances:/appdata/space-engineers/instances
+      - ./data/SpaceEngineersDedicated:/appdata/space-engineers/SpaceEngineersDedicated
+      - ./data/steamcmd:/root/.steam
+    environment: 
+      WINEDEBUG: -all
+      INSTANCE_NAME: ${INSTANCE_NAME}
+    logging:
+      driver: json-file
+      options:
+        tag: "{{.Name}}"
+        max-size: 1m
+        max-file: 5

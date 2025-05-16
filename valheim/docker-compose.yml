@@ -1,0 +1,48 @@
+services:
+  valheim:
+    image: ghcr.io/lloesche/valheim-server
+    container_name: valheim
+    hostname: valheim
+    restart: unless-stopped
+    cap_add:
+      - sys_nice
+    ports:
+      - 2456-2458:2456-2458/udp
+      - 9001:9001/tcp
+    volumes:
+      - ./data:/config
+    stop_grace_period: 2m
+    environment:
+      WORLD_NAME: ${WORLD_NAME}
+      SERVER_NAME: ${SERVER_NAME}
+      SERVER_PORT: 2456
+      SERVER_PASS: ""
+      SERVER_PUBLIC: false
+      UPDATE_IF_IDLE: true
+      UPDATE_CRON: "0 4 * * *"
+      RESTART_IF_IDLE: true
+      RESTART_CRON: "0 5 * * *"
+      BACKUPS: true
+      BACKUPS_CRON: "0 * * * *"
+      BACKUPS_DIRECTORY: /backups
+      BACKUPS_MAX_AGE: 7
+      BACKUPS_IF_IDLE: true
+      STEAMCMD_ARGS: validate
+      VALHEIM_PLUS: true
+      VALHEIM_PLUS_REPO: Grantapher/ValheimPlus
+      VALHEIM_PLUS_RELEASE: latest
+      ADMINLIST_IDS: ${ADMINLIST_IDS}
+      PERMITTEDLIST_IDS: ${PERMITTEDLIST_IDS}
+    logging:
+      driver: json-file
+      options:
+        tag: "{{.Name}}"
+        max-size: 1m
+        max-file: 5
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+        reservations:
+          cpus: '0.2'
+          memory: 2G

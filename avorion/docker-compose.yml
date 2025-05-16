@@ -1,0 +1,27 @@
+services:
+  avorion:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: avorion
+    hostname: avorion
+    restart: unless-stopped
+    user: root
+    tty: true
+    ports:
+      - 27000:27000/tcp
+      - 27000:27000/udp
+      - 27003:27003/udp
+      - 27020:27020/udp
+      - 27021:27021/udp
+    volumes:
+      - ./data:/root/.avorion
+    environment:
+      GALAXY_NAME: ${GALAXY_NAME}
+      WHITELIST: ${WHITELIST}
+    logging:
+      driver: json-file
+      options:
+        tag: "{{.Name}}"
+        max-size: 1m
+        max-file: 5

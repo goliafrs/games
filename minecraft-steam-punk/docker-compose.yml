@@ -1,0 +1,49 @@
+services:
+  minecraft-steam-punk:
+    image: itzg/minecraft-server
+    container_name: minecraft-steam-punk
+    hostname: minecraft-steam-punk
+    tty: true
+    stdin_open: true
+    restart: unless-stopped
+    ports:
+      - 25566:25566
+    environment:
+      EULA: "true"
+      VERSION: "1.19.2"
+      SERVER_PORT: 25566
+      # MEMORY: "12G"
+      INIT_MEMORY: "4G"
+      MAX_MEMORY: "12G"
+      TYPE: "FORGE"
+      MOD_PLATFORM: "AUTO_CURSEFORGE"
+      CF_API_KEY: ${CF_API_KEY}
+      CF_SLUG: "steam-punk"
+      # CF_EXCLUDE_MODS:
+      # CURSEFORGE_FILES:
+      DIFFICULTY: "normal"
+      # OPS:
+      SYNC_FILE_MERGE_LIST: "true"
+      # WHITELIST:
+      VIEW_DISTANCE: "10"
+      MODE: "survival"
+      LEVEL: ${LEVEL}
+      SERVER_NAME: ${SERVER_NAME}
+      JVM_DD_OPTS: "fml.queryResult=confirm"
+      MAX_TICK_TIME: "-1"
+      ALLOW_NETHER: "true"
+      ALLOW_FLIGHT: "true"
+      ENABLE_COMMAND_BLOCK: "true"
+      OVERRIDE_SERVER_PROPERTIES: "true"
+      USE_AIKAR_FLAGS: "true"
+    volumes:
+      - ./data:/data
+      - ./extras:/extras
+      - ./modpacks:/modpacks
+      - ./downloads:/downloads
+    logging:
+      driver: json-file
+      options:
+        tag: "{{.Name}}"
+        max-size: 11m
+        max-file: 5

@@ -1,0 +1,12 @@
+data
+backup
+config
+extras
+modpacks
+downloads
+
+.env
+
+*.zip
+
+_*

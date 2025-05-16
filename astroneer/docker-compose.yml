@@ -1,0 +1,20 @@
+services:
+  astroneer:
+    image: registry.gitlab.com/altercode/astroneer-linux:latest
+    container_name: astroneer
+    hostname: astroneer
+    restart: unless-stopped
+    user: root
+    ports:
+      - 5000:5000
+      - 7777:7777/udp
+      - 30877:30877/tcp
+      - 30877:30877/udp
+    volumes:
+      - ./data:/astroneer/Astro/Saved
+    logging:
+      driver: json-file
+      options:
+        tag: "{{.Name}}"
+        max-size: 1m
+        max-file: 5

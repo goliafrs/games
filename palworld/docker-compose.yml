@@ -1,0 +1,31 @@
+services:
+  palworld:
+    image: thijsvanloef/palworld-server-docker:latest
+    container_name: palworld
+    hostname: palworld
+    restart: unless-stopped
+    stop_grace_period: 30s
+    ports:
+      - 8211:8211/udp
+      - 27015:27015/udp
+    environment:
+      PUID: 1000
+      PGID: 1000
+      PORT: 8211
+      PLAYERS: 2
+      MULTITHREADING: true
+      RCON_ENABLED: false
+      RCON_PORT: 25575
+      SERVER_PASSWORD: ${SERVER_PASSWORD}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      COMMUNITY: false
+      SERVER_NAME: ${SERVER_NAME}
+      SERVER_DESCRIPTION: ${SERVER_DESCRIPTION}
+    volumes:
+      - ./data:/palworld/
+    logging:
+      driver: json-file
+      options:
+        tag: "{{.Name}}"
+        max-size: 1m
+        max-file: 5

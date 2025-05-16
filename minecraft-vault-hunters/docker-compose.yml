@@ -1,0 +1,53 @@
+services:
+  minecraft-vault-hunters:
+    image: itzg/minecraft-server:latest
+    container_name: minecraft-vault-hunters
+    tty: true
+    stdin_open: true
+    restart: unless-stopped
+    ports:
+      - 25565:25565
+    volumes:
+      - ./data:/data
+      - ./extras:/extras
+      - ./modpacks:/modpacks
+      - ./downloads:/downloads
+    environment:
+      EULA: true
+      VERSION: 1.18.2
+      # MEMORY: 12G
+      INIT_MEMORY: 12G
+      MAX_MEMORY: 24G
+      TYPE: FORGE
+      MOD_PLATFORM: AUTO_CURSEFORGE
+      CF_API_KEY: ${CF_API_KEY}
+      CF_SLUG: vault-hunters-1-18-2
+      CF_FILENAME_MATCHER: 3.15.1.4
+      DIFFICULTY: easy
+      # OPS:
+      SYNC_FILE_MERGE_LIST: true
+      VIEW_DISTANCE: 10
+      MODE: survival
+      LEVEL: ${LEVEL}
+      SERVER_NAME: ${SERVER_NAME}
+      JVM_DD_OPTS: fml.queryResult=confirm
+      MAX_TICK_TIME: -1
+      ALLOW_NETHER: true
+      ALLOW_FLIGHT: true
+      ENABLE_COMMAND_BLOCK: true
+      OVERRIDE_SERVER_PROPERTIES: true
+      USE_AIKAR_FLAGS: true
+      ONLINE_MODE: false
+    logging:
+      driver: json-file
+      options:
+        tag: "{{.Name}}"
+        max-size: 1m
+        max-file: 5
+    deploy:
+      resources:
+        limits:
+          memory: 24G
+        reservations:
+          cpus: '0.2'
+          memory: 16G
