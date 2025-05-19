@@ -37,8 +37,8 @@ GAME_DIR=$SCRIPT_DIR/$GAME
 DATA_DIR=$GAME_DIR/data
 COMPOSE_FILE=$GAME_DIR/docker-compose.yml
 REMOTE_DIR=$R_CLONE_STORAGE:/games/$GAME
-CRON_JOB="0 * * * * ~/$GAME.sh backup"
-CRON_JOB_1="30 6 * * * ~/$GAME.sh restart"
+CRON_JOB="0 * * * * $SCRIPT_DIR/games.sh $GAME backup"
+CRON_JOB_1="30 6 * * * $SCRIPT_DIR/games.sh $GAME restart"
 
 case $GAME in
   "ark")
