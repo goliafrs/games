@@ -4,12 +4,12 @@ SCRIPT_DIR=$(dirname ${BASH_SOURCE[0]})
 source $SCRIPT_DIR/_variables.sh
 
 function start() {
-  sudo docker compose --file $COMPOSE_FILE up --detach --build
+  docker compose --file $COMPOSE_FILE up --detach --build
   logs
 }
 
 function stop() {
-  sudo docker compose --file $COMPOSE_FILE stop
+  docker compose --file $COMPOSE_FILE down
 }
 
 function restart() {
@@ -18,20 +18,20 @@ function restart() {
 }
 
 function logs() {
-  sudo docker compose --file $COMPOSE_FILE logs --follow --no-log-prefix
+  docker compose --file $COMPOSE_FILE logs --follow --no-log-prefix
 }
 
 function attach() {
-  sudo docker exec --interactive --tty $CONTAINER_NAME /bin/bash
+  docker exec --interactive --tty $CONTAINER_NAME /bin/bash
 }
 
 function destroy() {
   stop
-  sudo docker compose --file $COMPOSE_FILE rm --force
+  docker compose --file $COMPOSE_FILE rm --force
 }
 
 function cleanup() {
-  sudo docker system prune --all --force --volumes
+  docker system prune --all --force --volumes
 }
 
 function post_reset() {

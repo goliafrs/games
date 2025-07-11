@@ -1,0 +1,115 @@
+services:
+  dayz:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dayz
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    ports:
+      - ${PORT:-2302}:${PORT:-2302}/udp
+      - 2303:2303/udp
+      - 2304:2304/udp
+      - 2305:2305/udp
+      - 8766:8766/udp
+      - 27016:27016/udp
+    volumes:
+      - ./data:/root/dayz/mpmissions:rw
+      - ./server:/root/dayz:rw
+      - ./steam:/root/Steam:rw
+      - ./share:/root/.local/share:rw
+    environment:
+      # Steam
+      - STEAM_USER=${STEAM_USER:-}                                              # Steam username (do not store it in this file, use .env file instead)
+      - STEAM_PASS=${STEAM_PASS:-}                                              # Steam password (do not store it in this file, use .env file instead)
+      - STEAM_GUARD_CODE=${STEAM_GUARD_CODE:-}                                  # Steam guard code (do not store it in this file, use .env file instead)
+
+      # serverDZ.cfg
+      - HOSTNAME=${HOSTNAME:-DayZ}                                              # Server name
+      - DESCRIPTION=${DESCRIPTION:-DayZ Server}                                 # Description of the server
+      - PASSWORD=${PASSWORD:-}                                                  # Password to connect to the server
+      - PASSWORD_ADMIN=${PASSWORD_ADMIN:-}                                      # Password to become a server admin
+      - ENABLE_WHITELIST=${ENABLE_WHITELIST:-0}                                 # Enable/disable whitelist (value 0-1)
+      - DISABLE_BANLIST=${DISABLE_BANLIST:-false}                               # Disables the usage of ban.txt (default: false)
+      - DISABLE_PRIORITYLIST=${DISABLE_PRIORITYLIST:-false}                     # Disables usage of priority.txt (default: false)
+      - MAX_PLAYERS=${MAX_PLAYERS:-4}                                           # Maximum amount of players
+      - VERIFY_SIGNATURES=${VERIFY_SIGNATURES:-2}                               # Verifies .pbos against .bisign files. (only 2 is supported)
+      - FORCE_SAME_BUILD=${FORCE_SAME_BUILD:-1}                                 # When enabled, the server will allow the connection only to clients with same the .exe revision as the server (value 0-1)
+      - DISABLE_VON=${DISABLE_VON:-0}                                           # Enable/disable voice over network (value 0-1)
+      - DISABLE_3RD_PERSON=${DISABLE_3RD_PERSON:-0}                             # Toggles the 3rd person view for players (value 0-1)
+      - DISABLE_CROSSHAIR=${DISABLE_CROSSHAIR:-0}                               # Toggles the cross-hair (value 0-1)
+      - DISABLE_PERSONAL_LIGHT=${DISABLE_PERSONAL_LIGHT:-1}                     # Disables personal light for all clients connected to server
+      - VON_CODEC_QUALITY=${VON_CODEC_QUALITY:-20}                              # Voice over network codec quality, the higher the better (values 0-30)
+      - LIGHTING_CONFIG=${LIGHTING_CONFIG:-0}                                   # 0 for brighter night setup, 1 for darker night setup
+      - SERVER_TIME=${SERVER_TIME:-2015/4/8/06/00}                              # Initial in-game time of the server. "SystemTime" means the local time of the machine. Another possibility is to set the time to some value in "YYYY/MM/DD/HH/MM" format, f.e. "2015/4/8/17/23".
+      - SERVER_TIME_ACCELERATION=${SERVER_TIME_ACCELERATION:-2}                 # Accelerated Time (value 0-24)// This is a time multiplier for in-game time. In this case, the time would move 24 times faster than normal, so an entire day would pass in one hour.
+      - SERVER_NIGHT_TIME_ACCELERATION=${SERVER_NIGHT_TIME_ACCELERATION:-48}    # Accelerated Night Time - The
+      - SERVER_TIME_PERSISTENT=${SERVER_TIME_PERSISTENT:-0}                     # Persistent Time (value 0-1)// The actual server time is saved to storage, so when active, the next server start will use the saved time value.
+      - SHARD_ID=${SHARD_ID:-123abc}                                            # Six alphanumeric characters for Private server
+      - GUARANTEED_UPDATES=${GUARANTEED_UPDATES:-1}                             # Communication protocol used with game server (use only number 1)
+      - LOGIN_QUEUE_CONCURRENT_PLAYERS=${LOGIN_QUEUE_CONCURRENT_PLAYERS:-4}     # The number of players concurrently processed during the login process. Should prevent massive performance drop during connection when a lot of people are connecting at the same time.
+      - LOGIN_QUEUE_MAX_PLAYERS=${LOGIN_QUEUE_MAX_PLAYERS:-4}                   # The maximum number of players that can wait in login queue
+      - INSTANCE_ID=${INSTANCE_ID:-1}                                           # DayZ server instance id, to identify the number of instances per box and their storage folders with persistence files
+      - STORAGE_AUTO_FIX=${STORAGE_AUTO_FIX:-1}                                 # Checks if the persistence files are corrupted and replaces corrupted ones with empty ones (value 0-1)
+      - TEMPLATE=${TEMPLATE:-dayzOffline.chernarusplus}                         # The name of the template to use for the server. This is the name of the .pbo file in the "mpmissions" folder.
+
+      # Globals
+      - ANIMAL_MAX_COUNT=${ANIMAL_MAX_COUNT:-800}                               # Maximum number of animals on the server (default: 200, min: N/A, max: N/A)
+      - CLEANUP_AVOIDANCE=${CLEANUP_AVOIDANCE:-100}                             # Radius around players where world cleanup won’t remove objects (default: 100 m, min: N/A, max: N/A)
+      - CLEANUP_LIFETIME_DEAD_ANIMAL=${CLEANUP_LIFETIME_DEAD_ANIMAL:-3600}      # Time before dead animal bodies are removed (default: 1200 s, min: N/A, max: N/A)
+      - CLEANUP_LIFETIME_DEAD_INFECTED=${CLEANUP_LIFETIME_DEAD_INFECTED:-360}   # Time before dead infected bodies are removed (default: 330 s, min: N/A, max: N/A)
+      - CLEANUP_LIFETIME_DEAD_PLAYER=${CLEANUP_LIFETIME_DEAD_PLAYER:-3600}      # Time before dead player bodies are removed (default: 3600 s, min: N/A, max: N/A)
+      - CLEANUP_LIFETIME_DEFAULT=${CLEANUP_LIFETIME_DEFAULT:-60}                # Base lifetime for world objects without special settings (default: 45 s, min: N/A, max: N/A)
+      - CLEANUP_LIFETIME_LIMIT=${CLEANUP_LIFETIME_LIMIT:-120}                   # Max number of objects removed per cleanup cycle (default: 50, min: N/A, max: N/A)
+      - CLEANUP_LIFETIME_RUINED=${CLEANUP_LIFETIME_RUINED:-360}                 # Time before ruined items are removed (default: 330 s, min: N/A, max: N/A)
+      - FLAG_REFRESH_FREQUENCY=${FLAG_REFRESH_FREQUENCY:-432000}                # How often server “refreshes” flags to prevent decay (default: 432 000 s, min: N/A, max: N/A)
+      - FLAG_REFRESH_MAX_DURATION=${FLAG_REFRESH_MAX_DURATION:-3456000}         # Maximum duration of a flag refresh effect (default: 3 456 000 s, min: N/A, max: N/A)
+      - FOOD_DECAY=${FOOD_DECAY:-1}                                             # Multiplier for food spoilage speed (1 = standard rate) (default: 1, min: N/A, max: N/A)
+      - IDLE_MODE_COUNTDOWN=${IDLE_MODE_COUNTDOWN:-3600}                        # Time until server enters idle economy mode with no players (default: 60 s, min: N/A, max: N/A)
+      - IDLE_MODE_STARTUP=${IDLE_MODE_STARTUP:-0}                               # Enable idle startup mode (0 = off, 1 = on) (default: 1, min: 0, max: 1)
+      - INITIAL_SPAWN=${INITIAL_SPAWN:-100}                                     # Percentage fill of loot on first server start (default: 100 %, min: N/A, max: N/A)
+      - LOOT_DAMAGE_MAX=${LOOT_DAMAGE_MAX:-0.10}                                # Maximum condition damage applied to loot on spawn (default: 0.82, min: 0.0, max: 1.0)
+      - LOOT_DAMAGE_MIN=${LOOT_DAMAGE_MIN:-0.0}                                 # Minimum condition damage applied to loot on spawn (default: 0.0, min: 0.0, max: 1.0)
+      - LOOT_PROXY_PLACEMENT=${LOOT_PROXY_PLACEMENT:-1}                         # Enable use of proxy placements for loot (0 = off, 1 = on) (default: 1, min: 0, max: 1)
+      - LOOT_SPAWN_AVOIDANCE=${LOOT_SPAWN_AVOIDANCE:-1}                         # Radius where loot won’t spawn near players (default: 100 m, min: N/A, max: N/A)
+      - RESPAWN_ATTEMPT=${RESPAWN_ATTEMPT:-4}                                   # Number of attempts for correct player respawn on failure (default: 2, min: N/A, max: N/A)
+      - RESPAWN_LIMIT=${RESPAWN_LIMIT:-60}                                      # Maximum respawn attempts per session (default: 20, min: N/A, max: N/A)
+      - RESPAWN_TYPES=${RESPAWN_TYPES:-24}                                      # Number of different respawn point types (default: 12, min: N/A, max: N/A)
+      - RESTART_SPAWN=${RESTART_SPAWN:-1}                                       # Respawn objects on server restart (0 = no, 1 = yes) (default: 0, min: 0, max: 1)
+      - SPAWN_INITIAL=${SPAWN_INITIAL:-1500}                                    # Radius for initial world spawn of objects and NPCs around players (default: 1200 m, min: N/A, max: N/A)
+      - TIME_HOPPING=${TIME_HOPPING:-60}                                        # Penalty time for hopping between servers (default: 60 s, min: N/A, max: N/A)
+      - TIME_LOGIN=${TIME_LOGIN:-3}                                             # Delay time for player login (default: 15 s, min: N/A, max: N/A)
+      - TIME_LOGOUT=${TIME_LOGOUT:-3}                                           # Delay time for player logout (default: 15 s, min: N/A, max: N/A)
+      - TIME_PENALTY=${TIME_PENALTY:-20}                                        # Penalty time for players after certain actions (default: 20 s, min: N/A, max: N/A)
+      - WORLD_WET_TEMP_UPDATE=${WORLD_WET_TEMP_UPDATE:-1}                       # Enable periodic update of world wetness and temperature (0 = off, 1 = on) (default: 1, min: 0, max: 1)
+      - ZOMBIE_MAX_COUNT=${ZOMBIE_MAX_COUNT:-800}                               # Maximum number of zombies on the server (default: 1000, min: N/A, max: N/A)
+      - ZONE_SPAWN_DIST=${ZONE_SPAWN_DIST:-100}                                 # Radius for dynamic zombie spawn zones around players (default: 300 m, min: N/A, max: N/A)
+
+      # Mods
+      - MODS=${MODS:-}                                                          # Example mod with @, replace with your own (separate multiple mods with a ;)
+      - MODS_IDS=${MODS_IDS:-}                                                  # Example mod Steam ID, replace with your own (separate multiple IDs with a ;)
+
+      # Server launch flags (plus some dayzsetting.xml envs)
+      - CONFIG_FILE=${CONFIG_FILE:-serverDZ.cfg}                                # Path to server config file (default: serverDZ.cfg)
+      - PORT=${PORT:-2302}                                                      # Server port (default: 2302)
+      - BE_PATH=${BE_PATH:-battleye}                                            # Path to BattleEye folder (default: battleye)
+      - CPU_COUNT=${CPU_COUNT:-8}                                               # Number of CPU threads to use (default: 2)
+      - RESERVED_CORES=${RESERVED_CORES:-2}                                     # Number of reserved CPU cores for the server (default: 1)
+      - LIMIT_FPS=${LIMIT_FPS:-120}                                             # Limit FPS to reduce CPU usage (default: 120, max: 200, set to 0 for no limit)
+      - PROFILES=${PROFILES:-profiles}                                          # Path to profiles directory for logs and stats (default: profiles)
+      - DO_LOGS=${DO_LOGS:-1}                                                   # Enable writing of logs (1 = enabled, 0 = disabled)
+      - ADMIN_LOG=${ADMIN_LOG:-1}                                               # Enable admin logs (1 = enabled, 0 = disabled)
+      - NET_LOG=${NET_LOG:-1}                                                   # Enable network logs (1 = enabled, 0 = disabled)
+      - FREEZE_CHECK=${FREEZE_CHECK:-1}                                         # Enable freeze check (1 = enabled, 0 = disabled)
+      - SCRIPT_DEBUG=${SCRIPT_DEBUG:-0}                                         # Enable script debug mode (1 = enabled, 0 = disabled)
+      - SCRIPT_DEBUG_LEVEL=${SCRIPT_DEBUG_LEVEL:-1}                             # Script debug verbosity (default: 1)
+      - FILE_PATCHING=${FILE_PATCHING:-0}                                       # Enable file patching (1 = enabled, 0 = disabled)
+      - MISSION=${MISSION:-}                                                    # Path to missions folder (optional)
+      - NAME=${NAME:-dayz}                                                      # Server process name (default: dayz)
+    logging:
+      driver: json-file
+      options:
+        tag: "[dayz]"
+        max-size: 1m
+        max-file: 5

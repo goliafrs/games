@@ -112,3 +112,144 @@ games <game> [command]
 - **cron** — Add backup and restart jobs to cron
 
 ---
+
+## DayZ
+
+> **This guide explains how to run your own DayZ server using Docker Compose.**
+
+---
+
+### How it works
+
+- On every container start, the main server config file (by default `serverDZ.cfg`, or as set in `CONFIG_FILE`) is fully regenerated from environment variables. All config values are controlled via environment variables in `docker-compose.yml` or `.env`.
+- If the config file does not exist, it will be created automatically.
+- Any changes to environment variables require a container restart (`docker compose up -d`) to apply.
+- Mods are downloaded and linked automatically if you specify both `MODS` and `MODS_IDS`.
+- All persistent data (world, configs, Steam auth, mods) is stored in volumes. Deleting these folders will reset your server and Steam login.
+
+**You can control all server settings via environment variables. Manual edits to the config file will be overwritten on next start.**
+
+---
+
+### 1. Prerequisites
+
+- Install [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/).
+- Clone this repository and go to the DayZ directory:
+
+    ```bash
+    git clone https://github.com/goliafrs/games.git
+    cd games/dayz
+    ```
+
+---
+
+### 2. Volumes: Persistent Data & Steam Auth
+
+- **You must use volumes for `/root/Steam` and `/root/.local/share`** to persist Steam authentication and avoid entering Steam Guard code every time.
+- Volume for `/root/dayz` (e.g. `./data:/root/dayz`) is required to persist server data (world, configs, etc).
+- Do **not** delete the `./share`, `./steam`, or `./data` folders on your host — they store your server state and Steam credentials.
+
+**Example docker-compose.yml volumes section:**
+
+```yaml
+volumes:
+  - ./data:/root/dayz
+  - ./share:/root/.local/share
+  - ./steam:/root/Steam
+```
+
+---
+
+### 3. Environment Variables
+
+- **STEAM_USER** and **STEAM_PASS** — your Steam login and password (use a `.env` file or export variables for security).
+- **MODS** — list of mod folder names (e.g. `@CF;@Community-Online-Tools`)
+- **MODS_IDS** — list of corresponding Steam Workshop IDs (e.g. `1559212036;1564026768`)
+- **Order of MODS and MODS_IDS must match!**
+- All other server/game settings can be set as environment variables (see `docker-compose.yml` for examples and defaults).
+
+**Example:**
+
+```yaml
+environment:
+  - STEAM_USER=your_steam_login
+  - STEAM_PASS=your_steam_password
+  - HOSTNAME=My DayZ Server
+  - MODS=@CF;@Community-Online-Tools
+  - MODS_IDS=1559212036;1564026768
+  # ...other settings...
+```
+
+---
+
+### 4. First Launch & Steam Guard
+
+1. Build and start the container:
+
+    ```bash
+    docker compose up --build
+    ```
+
+2. On first launch, SteamCMD will ask for a Steam Guard code.
+   Open a second terminal and run:
+
+    ```bash
+    docker attach dayz
+    ```
+
+   Enter the Steam Guard code from your email or Steam app.
+3. After successful login, Steam Guard will not be required again (unless you delete the volumes).
+
+---
+
+### 5. Main Commands
+
+- **Start server:**  
+
+    ```bash
+    docker compose up -d
+    ```
+
+- **Stop server:**  
+
+    ```bash
+    docker compose down
+    ```
+
+- **Rebuild and restart:**  
+
+    ```bash
+    docker compose up --build
+    ```
+
+- **View logs:**  
+
+    ```bash
+    docker compose logs -f
+    ```
+
+- **Enter container shell:**  
+
+    ```bash
+    docker exec -it dayz bash
+    ```
+
+---
+
+### 6. Tips & Notes
+
+- **Do not use `--build` unless you changed the Dockerfile or dependencies.**
+- **Never delete your volume folders** (`./data`, `./share`, `./steam`) unless you want to reset everything.
+- **Mods:**  
+  - Always specify both `MODS` and `MODS_IDS` (semicolon-separated, same order).
+  - Mods are downloaded and linked automatically.
+- **Config changes:**  
+  - After changing environment variables, restart the container:  
+
+    ```bash
+    docker compose up -d
+    ```
+
+---
+
+**If you have issues, check comments in `docker-compose.yml` for more details.**
